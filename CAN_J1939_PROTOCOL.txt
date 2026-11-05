@@ -1,0 +1,375 @@
+1) What is CAN?
+  - CAN (Controller Area Network) is a serial communication protocol developed by Bosch that allows microcontrollers and 
+    ECUs to communicate without a host computer.
+
+2) Why is CAN used in automobiles?
+	High reliability
+	Real-time communication
+	Error detection and recovery
+	Reduced wiring
+	Multi-master capability
+	
+3) What are the different CAN versions?
+	CAN 2.0A (11-bit identifier)
+	CAN 2.0B (29-bit identifier)
+	CAN FD (Flexible Data Rate)
+	
+4) A Classical CAN frame:
+   ID | Control | 0–8 Bytes Data | CRC | ACK | EOF
+   
+5) A CAN FD frame:
+   ID | Control (FDF, BRS bits) | 0–64 Bytes Data | Enhanced CRC | ACK | EOF
+   
+   Two important new bits are:
+	 - FDF (FD Format) – Indicates the frame uses CAN FD.
+	 - BRS (Bit Rate Switch) – Indicates the transmitter switches to a higher data rate during the data field.
+	 
+	CAN FD divides a message into two phases:
+
+		Arbitration phase
+		 - Uses the traditional CAN bit rate (e.g., 500 kbps or 1 Mbps).
+
+		Data phase
+		 - After arbitration, the sender can switch to a much higher bit rate (e.g., 2, 5, or 8 Mbps).
+	     - This allows the actual payload to be transmitted much faster.
+
+   For example:
+     Arbitration: 500 kbps
+     Data transmission: 5 Mbps
+	 
+6) What are the different CAN frame types?
+	- Data Frame
+	- Remote Frame
+	- Error Frame
+	- Overload Frame
+	
+7) What is dominant and recessive bit?
+	Dominant = Logical 0
+	Recessive = Logical 1
+	
+8) What is CAN arbitration?
+   The message with the lowest ID wins arbitration because dominant bits overwrite recessive bits.
+   
+9)Types of CAN error detection
+   a) CRC (Cyclic Redundancy Check) Error
+      The transmitter: calculates a CRC value and sends it with the frame.
+      The receiver: Recalculates the CRC.Compares it with the received CRC.
+
+      If they do not match:
+          Received CRC ≠ Calculated CRC
+      → CRC Error
+		
+	  The CRC is calculated over:
+		Start of Frame (SOF)
+		Arbitration Field
+		Identifier (11-bit or 29-bit)
+		RTR bit
+		Control Field
+		IDE bit
+		r0 bit
+		DLC (Data Length Code)
+		Data Field (0–8 bytes)
+
+   b) Acknowledgment (ACK) Error
+     After sending a frame, the transmitter expects at least one receiver to acknowledge it.
+	 During the ACK slot:
+
+		Transmitter sends a recessive bit.
+		Any receiver that successfully received the frame sends a dominant bit.
+
+		If no dominant bit appears:
+
+		ACK Slot = 1
+
+		Expected = 0
+
+		→ ACK Error
+		
+	c) Bit Stuffing Error
+	   To maintain synchronization, CAN uses bit stuffing.
+	   Rule:
+
+		After five consecutive bits of the same value, the transmitter inserts one bit of the opposite value.
+		After five 1s → insert a 0
+		After five 0s → insert a 1
+		
+		Example (Correct):
+
+		11111 0 11111 0
+
+		If six identical bits appear without a stuffed bit:
+
+		111111
+
+		→ Stuff Error
+		
+	d) Bit Error in CAN
+	   A Bit Error occurs when the bit transmitted by a CAN node is different from the bit it reads back on the bus.
+	   
+	   In CAN, every transmitter monitors the bus while transmitting (called bit monitoring). This allows it to 
+	   immediately detect if the transmitted bit does not match the actual bus level.
+	   
+	   Rule
+		Transmitter sends 0 (dominant) → should read back 0
+		Transmitter sends 1 (recessive) → should read back 1
+
+		If the transmitted and monitored bits are different, a Bit Error is detected.
+		
+		A Bit Error occurs when the transmitting node sends a bit but reads back a different bit on the CAN bus during bit monitoring. 
+		The exceptions are the arbitration field and the ACK slot, where a bit mismatch is expected and does not indicate an error. 
+		When a Bit Error is detected, the node sends an Error Flag and the frame is retransmitted automatically.
+		
+10) What are the CAN error states?
+	- Error Active
+	- Error Passive
+	- Bus Off
+	
+	In the CAN protocol, each node maintains Transmit Error Counter (TEC) and Receive Error Counter (REC). 
+	Based on these counters, a node can be in one of three error states.
+	
+	                Errors Increase
+                      │
+                      ▼
+          +----------------------+
+          |   Error Active       |
+          | TEC, REC < 128       |
+          +----------------------+
+                      │
+          TEC or REC ≥ 128
+                      ▼
+          +----------------------+
+          |   Error Passive      |
+          | TEC < 256            |
+          +----------------------+
+                      │
+              TEC ≥ 256
+                      ▼
+          +----------------------+
+          |      Bus Off         |
+          | Node disconnected    |
+          +----------------------+
+		  
+		  - Error Active 
+		        
+				Node A ---> Sends Data
+
+				Noise occurs
+						↓
+
+				Node B detects CRC Error
+
+				Node B sends
+				000000 (Active Error Flag)
+
+						↓
+
+				All nodes discard the frame.
+
+						↓
+
+				Node A automatically retransmits.
+				
+11) What causes Bus Off?
+  - Transmit Error Counter (TEC) exceeds 255
+  
+	  In Bus Off
+
+		The node:
+
+		- Cannot transmit.
+		- Cannot receive.
+		- Does not acknowledge frames.
+		- Does not generate error flags.
+		- Is effectively disconnected from the network.
+		
+12) Difference Between TEC and REC in CAN
+
+  In the CAN protocol, every CAN controller maintains two error counters:
+
+    TEC (Transmit Error Counter)
+    REC (Receive Error Counter)
+
+  These counters help determine whether a node is operating normally or should transition to Error Passive or Bus Off.
+  
+13) What are CAN_H and CAN_L?
+
+   - CAN_H (CAN High) and CAN_L (CAN Low) are the two differential signal lines used by the CAN bus to transmit data.
+
+14) Termination resistance value?
+	- 120 Ω at each end of the CAN bus (effective 60 Ω across the bus).
+	
+15) How do you troubleshoot CAN communication?
+	Check power and ground
+	Verify termination resistance
+	Measure CAN_H and CAN_L voltages
+	Use a CAN analyzer
+	Check baud rate
+	Verify message IDs
+	
+16) What is a DBC File?
+
+	A DBC (Database CAN) file is a text-based database file that defines how CAN messages and signals should be interpreted.
+
+	A CAN bus transmits only raw binary data (IDs and bytes). The DBC file tells software what those bits mean.
+
+	In simple terms:
+
+	Without a DBC file: You see only raw CAN frames.
+	With a DBC file: You see meaningful signal names, units, and values.
+	
+17) Difference between CANoe and CANalyzer?
+	CANalyzer: Monitoring and analysis
+	CANoe: Simulation, testing, diagnostics, and automation
+	
+18) What is message latency in CAN?
+    - The delay between transmission and successful reception of a message.
+	
+19) Structure of a Classical CAN Data Frame
+
+ ┌────┬──────────────┬────────────┬────────────┬──────────┬────────┬────────┬─────────┐
+ │SOF │ Arbitration  │ Control    │ Data Field │ CRC Field│ ACK    │  EOF   │   IFS   │
+ └────┴──────────────┴────────────┴────────────┴──────────┴────────┴────────┴─────────┘
+ 
+ 1. Start of Frame (SOF)
+	- Length: 1 bit
+	- Value: Dominant (0)
+	
+ 2. Arbitration Field(CAN ID)
+   - This field determines message priority.
+   
+ 3. The Control Field contains information about the frame format and data length.
+	| Field | Description                        |
+	| ----- | ---------------------------------- |
+	| IDE   | Standard (0) or Extended (1) frame |
+	| r0    | Reserved bit                       |
+	| DLC   | Data Length Code (0–8 bytes)       |
+
+ 4. Data Field
+	This field contains the actual application data.
+	 - Classical CAN:
+	 - 0 to 8 bytes
+	 
+ 5. CRC Field (Cyclic Redundancy Check)
+     - Used for error detection.
+	 
+ 6. ACK Field
+    The ACK field contains:
+	ACK Slot
+	- ACK Delimiter
+	- If at least one receiver correctly receives the frame:
+	- Receiver transmits a Dominant (0) bit in the ACK slot.
+	
+ 7. End of Frame (EOF)
+	Length: 7 bits
+	All bits are Recessive (1)
+	1111111
+
+	This indicates that the frame transmission has ended.
+	
+ 8. Interframe Space (IFS)
+	The minimum idle period between two CAN frames.
+	It allows all nodes to prepare for the next transmission.
+	
+	--> Complete Classical CAN Data Frame
+		SOF | Arbitration | Control | Data | CRC | ACK | EOF | IFS
+
+		 1      12 bits      6 bits   0-8B   16b   2b    7b    3b
+		 
+19) Remote Frame Structure
+	A Remote Frame is a CAN frame that is used to request data from another ECU. Unlike a Data Frame, it does not contain any data bytes. Instead, 
+	it asks another node to transmit a Data Frame with the requested information.
+	
+	A Remote Frame is almost identical to a Data Frame except:
+
+	It has no Data Field.
+	The RTR (Remote Transmission Request) bit is Recessive (1).
+	SOF | Arbitration | Control | CRC | ACK | EOF
+
+	Notice that the Data Field is absent.
+	
+	
+20) j1939 fream Structure
+- J1939 Frame Structure
+| SOF | 29-bit Identifier | Control | Data | CRC | ACK | EOF |
+
+The important part for J1939 is the 29-bit Identifier:
+
+| Priority | Reserved | Data Page | PDU Format | PDU Specific | Source Address |
+|  3 bits   |  1 bit   |   1 bit   |   8 bits   |    8 bits    |    8 bits     |
+
+21) What is PDU in J1939?
+
+	- PDU = Protocol Data Unit
+
+	- J1939 has two important PDU formats:
+	  - PDU1
+	  - PDU2
+	PDU1: Used mainly for destination-specific / peer-to-peer communication.
+		In PDU1:PF < 240
+		PS = Destination Address
+		The PS field represents the destination address and isn't part of the PGN itself.
+
+	PDU2: Used mainly for broadcast communication.
+		PF >= 240
+		PS = Group Extension
+		In PDU2, PS contributes to the PGN.cf5
+		
+22) 12. Why is Transport Protocol required?
+	A normal classic CAN data frame can carry a maximum of 8 data bytes.
+	But a J1939 Parameter Group can contain more than 8 bytes.
+	Therefore, J1939 uses Transport Protocol (TP) to divide a large message into multiple CAN frames.
+	Large message
+		 ↓
+	Split into packets
+		 ↓
+	CAN frame 1
+	CAN frame 2
+	CAN frame 3
+	...
+		 ↓
+	Receiver combines packets
+
+	J1939 Transport Protocol uses TP.CM for connection management and TP.DT for data transfer.
+	
+23) What are TP.CM and TP.DT?
+
+	TP.CM = Transport Protocol Connection Management
+	It controls the multi-packet transfer.
+	TP.DT = Transport Protocol Data Transfer
+	It carries the actual segmented data.
+	
+24) 14. What is BAM?
+
+	BAM = Broadcast Announce Message
+	BAM is used when a large J1939 message needs to be broadcast to multiple nodes.
+	Basic sequence:
+
+	BAM
+	 ↓
+	TP.DT packet 1
+	 ↓
+	TP.DT packet 2
+	 ↓
+	TP.DT packet 3
+	 ↓
+	...
+
+	No specific destination ECU is required for the broadcast transfer.
+	
+15. What is RTS/CTS?
+
+	RTS = Request To Send
+	CTS = Clear To Send
+
+	These are used for connection-managed peer-to-peer transport.
+
+	Simple sequence:
+
+	Sender → RTS
+	Receiver → CTS
+	Sender → DATA
+	Sender → DATA
+	Sender → DATA
+	Receiver → End of Message ACK
+
+	This allows the receiver to control how data is transferred.

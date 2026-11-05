@@ -1,0 +1,175 @@
+`
+
+1) What is freeRTOS
+Ans:FreeRTOS is a free real time operting systemit isopen source real time operting system design for mcrocontrollers and embedded system.
+
+Key Feature:
+1) Task Mangament (Crate, delect, Resume)
+2) Priority-based Sheduleing
+3) interTask coumnication
+   - simaphore
+   - Mutex
+
+2) What is Diffreance between RTOS and genral perpose oS;
+   GPOS: Windos, Androad
+       on laptop music system pouse for a few milisecond when another application is running   
+   RTOS: in a car's airbag system, the airbag must be deploy with a few millisenconds after crash detecto
+         Missing deadline can be dengerrous.
+		 
+3) Task in freeRTOS: Task is indipendent thred of excucation that perforem the specfic task
+void LedTask(void){
+    while(1){
+	    blinkLed();
+		vTaskDelay(500);
+	}
+}
+int main(){
+  xTaskCreate(
+     LedTask,      // Task function
+	 "LED Blink",  // Task name
+	 255,          // Stack Size
+	 NULL,         // Paramerter
+	 1,            // Priorty of Task
+	 NULL          // Task Hander
+  );
+  vTaskStratSheduler();
+  while(1);
+}
+
+4) TCB: Task control block is Kenal data structure that stores the all informationrelated to the task
+   - Priority, state, stack pointer, sheduleing information
+   
+5) Context Switching: Is the proceses of saving the execution context of currently running task and restoring the context
+of another task.
+
+6) What is Sheduler: Sheduler diside which tack excute when. sheduler start when vTaskShedulerStart() function
+   - preemative Sheduling - High Priorty task preemates the currently running low priperty task
+   - Cooperative sheduling - Task running untill task valuntarily block or yelid
+   
+7) vTaskDelete():
+   The vTaskDelete() API used to delete task
+   vTaskdelete(&TaskHanel);
+   task delete itself
+   void Task1(){
+       vTaskDelete(NULL):
+   }
+   
+8) vTaskDelay(100) - Non Perodic Delay
+   vTaskDelayUntil(100) - Perodic Delay 
+   
+9) vTaskSuspened() is used to temporaly stop a task from running, andthe task enter the suspend stae
+   vTaskResume() move the task back to reday state
+   
+10) Diff between blocked and supended
+   Blocked-> Task waiting of vTaskDelay(100);
+   Suspenede-> task explicitly pouse vTaskSupended(100)
+   
+11) How to change the Task priorty
+The freeRTOS provides the vTaskPrioritySet(TaskHandler) API to change the task priorty at run time. After the priorty change sheduler reevaluet the  which task shouild be run
+and a context switch may occur if a higher - priority task eligibal to excute
+
+12)What happen two or more same priorty task are reday state in same time
+- if two or more task have same priorty and are in the reday state freeRTOS use a round robin (Time slissing)
+  to share the CPU time provied configUSE_TIME_SLICING is enabled;
+  EASCH task gets a change to run one tick. if time scling is disabled the runing task until disabled
+  
+13) How to get task information
+ 0 freeRTOS provides APIs such as PCTaskGetName, uxTaskPriortyGet, eTaskGetState(), vTaskGetInfo() to relevent task information
+ 
+14) What is Mutex.
+  - Mutex is a synchonazation object used to insure mutule excution
+  it is allow onaly one task to allow at a time to acesses a shared resource previenting the data corruption.
+  in frreRTOS Mutex crated
+  xSemaphoreCreateMutex() and locked with xSemaphoreTeke() and unlocked with xTaskGive()
+  
+  SemaphoreeHandle_t xMutex;
+  void Task1Print(void){
+        while(1){
+		    xTaskTake(xMutex);
+			print("Hello");
+			xTaskGive("World");
+			vTaskDelay(100);
+		}
+  }
+  
+  void Task2Print(void){
+        while(1){
+		    xTaskTake(xMutex);
+			print("Hello");
+			xTaskGive("World");
+			vTaskDelay(100);
+		}
+  }
+  int main(){
+     xMutex = xSemphoreCreateMutex();
+	 xTaskCreate(Task1Print, "Task1", 255, 1,NULL,&Task1Handler);
+	 xTaskCreate(Task2Print, "Task2", 255, 1,NULL,&Task2Handler);
+	 xTaskStartSheduler();
+  )
+  Two Task want to use the same UART
+  Task1 --> TakeMutex()----->UART ----> GiveMutex()
+  Task2 --> wait --> TakeMutex() ----> UART ----> GiveMutex()
+  
+15) What is Semaphore: Semaphore minaly used for synchronization. Task 1 block on xSemaphoreTake(). Task2 (or ISR) call the xSemaphoreGive()
+   which unblocks Task1
+   char uartData;
+   void UartISR(void){
+        uartData = UARTRX;
+        SemaphoreGive(uartShemaphore);
+   }
+   void Task1Uart(){
+         while(1){
+              if(ShemaphorTake(uartShemaphore)==TRUE){
+			       print("Recived Data =%c",uartData);
+			  }
+         }		 
+   }
+   int main(){
+   
+      vTaskCreate(Task1Uart,"UART Task",255,1,NULL,&Task1Handler);
+	  vTaskStartSheduler();
+   }
+   
+16) Queuq in RTOS
+   - A queue in RTOS is an inter-task communication mechanism that allows tasks and interrupts to excange data safely. it Work as 
+     FIFO one task or ISR can send data using xQueueSend() and another task can receive data using xQueueReceive()
+	 
+17) Diffreancebetween xQueueSend() and xQueueSendFromISR()
+   xQueueSend() is used by tasks to send data to a queue and block if the queue is full.
+   xQueueSendFromISR() is ud=sed inside an interrupt serview routines and can not block
+   
+18) What is heap_1 to heap_5
+    FreeRTOS provides heap_1 to heap_5mas a diffrent memory allocation scheam.
+	- Heap_1 is the simplest and suports only allocation
+	- 
+19) xTaskCreate() dynamically allocate memory for the task,s TCB and stack from the FreeRTOSheap. makeing simple to use but
+  depending upon the heap avilabilty
+  xTaskCreateStatic reuire the application to provide memory for both TCB and task stack
+  
+20)What is Diffreance between Binary Semaphore and Counting Semaphore
+   - Binary semaphore have only have two state 0(unaavlabe) 1(available)
+   - Mainaly used sycronize two task
+
+   - Counting shemaphore counting mulitipale resoures
+   - intial count equel to number of resources.
+
+   Printer Available = 3
+   Inital Count = 3
+
+   T1 takes -> Count = 2
+   T2 takes -> Count = 1
+   T3 takes -> Count = 0
+
+   T4 waits
+   T5 waits
+
+   T2 give ->count  = 1
+   T4 runs -> Count = 0 
+
+21) What is Interrupt Latency:
+    Time delay between when an interrupt occurs and when the CPU starts executing the interrupt Service Routine.
+	Suppose:
+	- A timer interrupt occurs at 100us
+	- The CPU starts executing the ISR at 105us
+	
+	- Interrupt Latency = 5us

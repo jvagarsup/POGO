@@ -1,0 +1,60 @@
+1) Linux introduction
+  - Linux is an open source operating system based on Unix
+  - Created by Linus Torvalds in 1991.
+  - Unix is licensed and Linux is open sourced.
+  - linux is not oprating system.
+  - Linux is an open-source Kernel
+  - A Kernel is the core part of an operating system, managing system resources and communication between hardware and software.
+  
+2) Virtuallization. 
+    -- >Hardware --> Windows --> Virtuallization --> Linux OS
+	--> Hypervisor -> it is software that creates and runs virtual machines(VMs)
+	
+	- Type of Hypervisor
+	  - Type1(Bare Metal)--> Hypervisor inslled on direect Hardware
+	  - Type2(Hosted) --> Hypervisor install on OS like windows
+	  
+3)Linux VirtualBox Setup On Windows
+  - Ubuntu
+  -Linux CentOs
+  
+  - Virtual Box Download
+  - www.virtualboc.org
+     - Downlodes- Oracal VN VirtualBox
+	 - install
+	 
+  Linux CentOS
+  - CentOs download
+  - www.centos.org
+    - Download - The CentOS Project
+	- x86_64
+	
+  -- Go to virtual box and crate new project
+  -- Select the drive and memory.
+  -- To Run the virtual mistion press the start button
+  -- Give the downloead CentOs file --> mount and boot
+  -- Select lagnuage
+  -- set password
+  -- allow ssh enable
+  -- Begin installation
+  -- give the user
+  
+4) Linux Cmd
+  - pwd : Current working deritery.
+  - date : To check date.
+  - ls : Display file and directory present in current location.
+  - ls -lt: for more information  
+  - clear : clean the terminal
+  - touch <file_name> : to create a new file.
+  - rm <file_name>    : Delete file in linux
+  - vi <file_name>    : Edit the file
+      - frist press i to edit the  file.
+	  - press q to exit.
+  - mkdir <folder name> : make folder
+  - rmdir <folder name> : delete folder
+  - cd <folder name>: open folder
+  - cd .. : back to prives folder
+  - cd Desktop/sudam1/dipss/kkk : open mulltiplae folder.
+  - cd ../../../ : back mulltiple folder
+  - cp <file Name> <folder location> Copy file
+  - mv <file Name> <folder location> move file

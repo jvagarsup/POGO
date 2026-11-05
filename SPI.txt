@@ -1,0 +1,88 @@
+
+1) What is the role of the Master in SPI?
+
+	The Master:
+
+	- Generates the clock (SCLK)
+	- Selects the slave using the CS line
+	- Initiates communication
+	- Controls data transfer speed
+	
+2) 4. What is the role of the Slave?
+
+	The Slave:
+
+	Responds only when its CS line is active (usually LOW)
+	Sends or receives data synchronized with the master's clock
+	
+3) Why is SPI faster than I²C?
+
+	Full-duplex communication
+	Higher clock frequencies (often several MHz or more)
+	No addressing overhead
+	Simple protocol with less processing
+	
+4)What happens if two CS lines are active at the same time?
+
+	Answer:
+	Two slaves may try to drive the MISO line simultaneously, causing bus contention and communication errors.
+	
+5) Q: What is CPOL and CPHA in SPI?
+
+	Answer:
+
+	CPOL (Clock Polarity): Defines the idle level of the SPI clock.
+	CPOL = 0 → Clock is idle LOW.
+	CPOL = 1 → Clock is idle HIGH.
+	CPHA (Clock Phase): Defines which clock edge is used to sample the data.
+	CPHA = 0 → Sample on the first clock edge.
+	CPHA = 1 → Sample on the second clock edge.
+
+	This combination creates the four SPI modes (Mode 0 to Mode 3).
+	
+6. Does SPI have an ACK mechanism?
+
+	Answer:
+	No. SPI does not include an acknowledgment mechanism like I²C.
+	
+7. Does SPI support error detection?
+
+	Answer:
+	No built-in error detection. Applications may add CRC, checksums, or other validation methods if needed.
+	
+8. Advantages of SPI?
+	High speed
+	Full-duplex communication
+	Simple hardware implementation
+	Low protocol overhead
+	Easy to implement
+	
+9. Disadvantages of SPI?
+	More wires required
+	One CS line per slave (in a typical implementation)
+	No addressing
+	No built-in acknowledgment or error checking
+
+10. SPI vs I²C	
+		| SPI                   | I²C                                   |
+	| --------------------- | ------------------------------------- |
+	| 4 wires               | 2 wires                               |
+	| Full duplex           | Half duplex                           |
+	| Faster                | Slower                                |
+	| No addressing         | Uses device addresses                 |
+	| Separate CS per slave | Supports multiple devices on same bus |
+	
+11. 21. What happens if CPOL/CPHA settings don't match?
+
+	Answer:
+	The receiver samples data at the wrong time, resulting in incorrect or corrupted data.
+	
+12. 23. Is SPI multi-master?
+
+	Answer:
+	SPI is generally designed for a single-master system. Multi-master implementations are uncommon and require additional arbitration logic.
+	
+13. What is the default idle state of CS?
+
+	Answer:
+	CS is typically HIGH (inactive). It is driven LOW to select the slave.

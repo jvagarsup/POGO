@@ -1,0 +1,21 @@
+
+- Git
+
+- Git is a software
+- It is a virsion control system
+- intial Release - 7 Apr - 2005
+
+2) new created file Bydefalut are untrack file
+   - To add file in stageing state need to use git cmd: $add <fileName.extanstion> 
+   - Create the New repositry on GitHUb
+Untrack file --> staging Area --> commit
+
+3) Install Git
+  $ git --version           : check if Git is alreday instlled 
+  $ git status              :
+  $ git init                : To make the git repo to local folder
+  $ git add  Test.c         : to add move untrack to stage    
+  $ git rm --cached Test.c  : to move stage to untrack  
+  $ git commit -m "my frist change" : to commit the massage
+  $ git remote add origin https://github.com/jvagarsup/POGO.git : origin name refer as URL
+  $ git push -u origin <branch name>

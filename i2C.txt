@@ -1,0 +1,84 @@
+1) What is the maximum number of devices on an I2C bus?
+	The maximum number of devices on an I²C bus is not fixed. It depends on:
+
+	Available I²C addresses
+	Bus capacitance
+	Electrical loading
+	1. Address Limit
+	7-bit addressing: 128 possible addresses (0–127)
+	Some addresses are reserved, so about 112–119 devices can theoretically be addressed.
+	10-bit addressing: Supports up to 1024 addresses, though it is rarely used.
+	2. Practical Limit
+
+	In real applications, the number of devices is limited by the maximum bus capacitance of 400 pF (as specified by the I²C standard).
+	
+2) What are the I2C speed modes?
+	Mode	Speed
+	Standard Mode	100 kbps
+	Fast Mode	400 kbps
+	Fast Mode Plus	1 Mbps
+	High-Speed Mode	3.4 Mbps
+	Ultra Fast Mode	5 Mbps (write only)
+	
+3) Why are pull-up resistors required?
+
+	Because I2C uses open-drain/open-collector outputs.
+
+	Pull-up resistors:
+
+	Keep SDA and SCL HIGH
+	Allow devices to pull the lines LOW safely
+	Prevent bus contention
+
+	Typical values:
+
+	4.7 kΩ
+	10 kΩ
+	
+4) i2C Fream
+  S | Slave Address | R/W | ACK | Data Byte | ACK | Data Byte | ACK | P
+  
+  | Field         | Size         | Description                              |
+| ------------- | ------------ | ---------------------------------------- |
+| Start (S)     | 1 bit        | Indicates the beginning of communication |
+| Slave Address | 7 or 10 bits | Identifies the target slave device       |
+| R/W Bit       | 1 bit        | Read (1) or Write (0)                    |
+| ACK/NACK      | 1 bit        | Acknowledgment from receiver             |
+| Data Byte     | 8 bits       | Actual data transferred                  |
+| Stop (P)      | 1 bit        | Indicates the end of communication       |
+
+5) What is ACK and NACK?
+
+	ACK (Acknowledge)
+
+	- Receiver pulls SDA LOW during the ACK clock pulse.
+    - NACK (Not Acknowledge)
+    - SDA remains HIGH.
+	- Indicates no acknowledgment or end of data.
+	
+6) Why does the master send NACK after the last byte?
+
+	To indicate:
+
+	"I don't need any more data."
+
+	Then the master sends the STOP condition.
+	
+7) What is Clock Stretching?
+   - A slave holds the SCL line LOW to delay the master until it is ready.
+   
+23. Explain Arbitration.
+
+    Arbitration Process
+
+	Each master:
+
+	Sends one bit.
+	Simultaneously reads the SDA line.
+	Compares the bit it sent with the bit present on the bus.
+
+	If a master sends 1 but reads 0, it knows another master is forcing the line LOW.
+
+	That master loses arbitration and immediately stops transmitting.
+
+	The winning master continues.
